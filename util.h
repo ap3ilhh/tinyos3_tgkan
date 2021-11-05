@@ -283,6 +283,12 @@ static inline void * xmalloc (size_t size)
 	@{
  */
 
+/*******************
+ * time to play*/
+
+ typedef struct process_thread_control_block PTCB;
+
+/*****************************/
 
 typedef struct process_control_block PCB;	/**< @brief Forward declaration */
 typedef struct thread_control_block TCB;	/**< @brief Forward declaration */
@@ -309,6 +315,9 @@ typedef struct resource_list_node {
      \endcode
      */
   union {
+  	/********************/
+  	PTCB* ptcb;
+  	/*******************/
     PCB* pcb; 
     TCB* tcb;
     CCB* ccb;
