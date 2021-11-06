@@ -58,10 +58,29 @@ typedef struct process_control_block {
                              process terminates. It is used in the implementation of
                              @c WaitChild() */
 
+  rlnode ptcb_list;       /**< @brief List of all PTCBs connected to current PCB */
+  int thread_count;       /**< @brief Number of threads that current process has */
+
   FCB* FIDT[MAX_FILEID];  /**< @brief The fileid table of the process */
 
 } PCB;
 
+typedef struct process_thread_control_block {
+  TCB* tcb;
+
+  Task task;
+  int argl;
+  void* args;
+
+  int exitval;
+
+  int exited
+  int detached
+  CondVar exit_cv;
+
+  int refcount;
+
+} PTCB;
 
 /**
   @brief Initialize the process table.
