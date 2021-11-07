@@ -1,4 +1,4 @@
-//////last input
+//////last input/
 #ifndef UTIL_H
 #define UTIL_H
 
