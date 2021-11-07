@@ -286,7 +286,7 @@ static inline void * xmalloc (size_t size)
 /*******************
  * time to play*/
 
- typedef struct process_thread_control_block PTCB;
+ typedef struct process_thread_control_block PTCB;  /**< @brief Forward declaration */
 
 /*****************************/
 
