@@ -8,6 +8,18 @@
   */
 Tid_t sys_CreateThread(Task task, int argl, void* args)
 {
+  PCB *curproc;
+  PTCB *newptcb;
+
+  newptcb = acquire_PTCB();
+
+  if(newptcb == NULL) goto finish;  /* We have run out of space!*/
+
+  rlist_push_front(& curproc->ptcb_list, & newptcb->ptcb_list_node)
+
+
+
+
 	return NOTHREAD;
   
 }

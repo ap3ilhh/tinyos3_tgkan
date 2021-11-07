@@ -147,7 +147,7 @@ void start_new_thread()
 Pid_t sys_Exec(Task call, int argl, void* args)
 {
   PCB *curproc, *newproc;
-  
+  PTCB *newptcb;
   /* The new process PCB */
   newproc = acquire_PCB();
 
@@ -175,6 +175,13 @@ Pid_t sys_Exec(Task call, int argl, void* args)
     }
   }
 
+  newptcb = acquire_PTCB();
+
+  if(newptcb == NULL) goto finish;
+
+  rlnode_init(&newptcb->ptcb_list_node, newptcb);
+
+  pcb->ptcb_list = & newptcb;
 
   /* Set the main thread's function */
   newproc->main_task = call;
