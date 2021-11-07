@@ -124,6 +124,22 @@ void start_main_thread()
   Exit(exitval);
 }
 
+/*
+ * Process thread creation
+ *
+ */
+void start_new_thread()
+{
+  int exitval;
+
+  Task call = CURTHREAD->ptcb->task;
+  int argl = CURTHREAD->ptcb->argl;
+  void* args = CURTHREAD->ptcb->args;
+
+  exitval = call(argl,args);
+  ThreadExit(exitval);
+}
+
 
 /*
 	System call to create a new process.
