@@ -19,11 +19,22 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
     newtcb = spawn_thread(curproc, start_new_thread); 
     newptcb = acquire_PTCB();
 
+    newptcb->task = task;
+    newptcb->argl = argl;
+    newptcb->args = args;
+
     newptcb->tcb = newtcb;
-    newptcb->tcb->ptcb = newptcb;
+    newptcb->exited = 0;
+    newptcb->detached = 0;
+    newptcb->refcount = 0;
+    newptcb->exit_cv = COND_INIT;
+      ////////////xreiazetai kai exitval arxikopoihsh?????
+    newtcb->ptcb = newptcb;
 
     rlist_push_front(& CURTHREAD->ptcb->ptcb_list_node, & newptcb->ptcb_list_node);
-    return  newptcb;
+    wakeup(newtcb);
+    
+    return  (Tid_t) newptcb;
   }
   else
   	return NOTHREAD;

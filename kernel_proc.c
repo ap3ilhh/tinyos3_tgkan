@@ -101,6 +101,25 @@ void release_PCB(PCB* pcb)
   process_count--;
 }
 
+PTCB* acquire_PTCB()
+{
+  PTCB* ptcb;
+  PCB* curproc = CURPROC;
+
+  ptcb = (PTCB*)xmalloc(sizeof(PTCB));
+
+  return ptcb;
+}
+
+/*
+  Must be called with kernel_mutex held
+*/
+void release_PTCB(PTCB* ptcb)
+{
+  free(ptcb);
+}
+
+
 
 /*
  *
@@ -175,13 +194,9 @@ Pid_t sys_Exec(Task call, int argl, void* args)
     }
   }
 
-  newptcb = acquire_PTCB();
 
-  if(newptcb == NULL) goto finish;
-
-  rlnode_init(&newptcb->ptcb_list_node, newptcb);
-
-  pcb->ptcb_list = & newptcb;
+  pcb->ptcb_list = & newptcb;     /* Since this is the main thread/ptcb, we point this to the ptcb list header
+                                    inside PCB that created it */
 
   /* Set the main thread's function */
   newproc->main_task = call;
@@ -202,6 +217,16 @@ Pid_t sys_Exec(Task call, int argl, void* args)
    */
   if(call != NULL) {
     newproc->main_thread = spawn_thread(newproc, start_main_thread);
+    
+    newptcb = acquire_PTCB();    /* Create new PTCB */
+
+    if(newptcb == NULL) goto finish;    /* IF new ptcb is null, we've run out of memory */
+
+    rlnode_init(&newptcb->ptcb_list_node, newptcb);   /* Initialize the singleton */
+
+
+
+
     wakeup(newproc->main_thread);
   }
 
