@@ -23,7 +23,7 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
     newptcb->tcb->ptcb = newptcb;
 
     rlist_push_front(& CURTHREAD->ptcb->ptcb_list_node, & newptcb->ptcb_list_node);
-    return  newtcb;
+    return  newptcb;
   }
   else
   	return NOTHREAD;
