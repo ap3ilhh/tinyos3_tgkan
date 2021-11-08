@@ -10,18 +10,23 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
 {
   PCB *curproc;
   PTCB *newptcb;
+  TCB *newtcb;
 
-  newptcb = acquire_PTCB();
+  curproc = CURPROC;
 
-  if(newptcb == NULL) goto finish;  /* We have run out of space!*/
+  if(call != NULL) {
 
-  rlist_push_front(& curproc->ptcb_list, & newptcb->ptcb_list_node)
+    newtcb = spawn_thread(curproc, start_new_thread); 
+    newptcb = acquire_PTCB();
 
+    newptcb->tcb = newtcb;
+    newptcb->tcb->ptcb = newptcb;
 
-
-
-	return NOTHREAD;
-  
+    rlist_push_front(& CURTHREAD->ptcb->ptcb_list_node, & newptcb->ptcb_list_node);
+    return  newtcb;
+  }
+  else
+  	return NOTHREAD;
 }
 
 /**
