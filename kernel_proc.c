@@ -219,13 +219,19 @@ Pid_t sys_Exec(Task call, int argl, void* args)
     newproc->main_thread = spawn_thread(newproc, start_main_thread);
     
     newptcb = acquire_PTCB();    /* Create new PTCB */
+    newptcb->task = task;
+    newptcb->argl = argl;
+    newptcb->args = args;
 
-    if(newptcb == NULL) goto finish;    /* IF new ptcb is null, we've run out of memory */
-
+    newptcb->tcb = newproc->main_thread;
+    newptcb->exited = 0;
+    newptcb->detached = 0;
+    newptcb->refcount = 0;
+    newptcb->exit_cv = COND_INIT;
+      ////////////xreiazetai kai exitval arxikopoihsh?????
+    newproc->main_thread->ptcb = newptcb;
+    
     rlnode_init(&newptcb->ptcb_list_node, newptcb);   /* Initialize the singleton */
-
-
-
 
     wakeup(newproc->main_thread);
   }
