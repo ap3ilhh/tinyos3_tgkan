@@ -31,7 +31,7 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
       ////////////xreiazetai kai exitval arxikopoihsh?????
     newtcb->ptcb = newptcb;
     curproc->thread_count++;
-    
+
     rlist_push_front(& CURTHREAD->ptcb->ptcb_list_node, & newptcb->ptcb_list_node);
     wakeup(newtcb);
     
@@ -45,8 +45,8 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
   @brief Return the Tid of the current thread.
  */
 Tid_t sys_ThreadSelf()
-{
-	return (Tid_t) cur_thread();
+
+	return (Tid_t) cur_thread()->ptcb;
 }
 
 /**
@@ -54,7 +54,14 @@ Tid_t sys_ThreadSelf()
   */
 int sys_ThreadJoin(Tid_t tid, int* exitval)
 {
-	return -1;
+  if((PTCB*)tid->detached == 0)
+  {
+    (PTCB*)tid->refcount++;
+    kernel_wait((PTCB*)tid->exit_cv, SCHED_USER);
+	
+
+  }
+  return -1;
 }
 
 /**
