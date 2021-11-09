@@ -30,7 +30,8 @@ Tid_t sys_CreateThread(Task task, int argl, void* args)
     newptcb->exit_cv = COND_INIT;
       ////////////xreiazetai kai exitval arxikopoihsh?????
     newtcb->ptcb = newptcb;
-
+    curproc->thread_count++;
+    
     rlist_push_front(& CURTHREAD->ptcb->ptcb_list_node, & newptcb->ptcb_list_node);
     wakeup(newtcb);
     

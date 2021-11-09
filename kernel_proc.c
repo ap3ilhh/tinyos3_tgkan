@@ -43,6 +43,7 @@ static inline void initialize_PCB(PCB* pcb)
   rlnode_init(& pcb->exited_list, NULL);
   rlnode_init(& pcb->children_node, pcb);
   rlnode_init(& pcb->exited_node, pcb);
+  rlnode_init(& pcb->ptcb_list, NULL);  
   pcb->child_exit = COND_INIT;
 }
 
@@ -85,6 +86,7 @@ PCB* acquire_PCB()
     pcb->pstate = ALIVE;
     pcb_freelist = pcb_freelist->parent;
     process_count++;
+    pcb->thread_count = 0;      /* Initialize thread count, because it couldn't be done in initialize pcb */
   }
 
   return pcb;
@@ -194,7 +196,6 @@ Pid_t sys_Exec(Task call, int argl, void* args)
     }
   }
 
-
   pcb->ptcb_list = & newptcb;     /* Since this is the main thread/ptcb, we point this to the ptcb list header
                                     inside PCB that created it */
 
@@ -217,7 +218,8 @@ Pid_t sys_Exec(Task call, int argl, void* args)
    */
   if(call != NULL) {
     newproc->main_thread = spawn_thread(newproc, start_main_thread);
-    
+    newproc->thread_count++;
+
     newptcb = acquire_PTCB();    /* Create new PTCB */
     newptcb->task = task;
     newptcb->argl = argl;
@@ -232,6 +234,7 @@ Pid_t sys_Exec(Task call, int argl, void* args)
     newproc->main_thread->ptcb = newptcb;
     
     rlnode_init(&newptcb->ptcb_list_node, newptcb);   /* Initialize the singleton */
+    rlist_push_back(& newproc->ptcb_list, newptcb->ptcb_list_node);
 
     wakeup(newproc->main_thread);
   }
